@@ -12,9 +12,8 @@ export default class ButtonBasics extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View>
-          <Text> Hello World!
-          </Text>
+        <View style={{alignItems: 'center'}}>
+          <Text> Hello World!</Text>
         </View>
         <View style={styles.buttonContainer}>
           <Button
