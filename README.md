@@ -16,8 +16,7 @@ Provide a README file with the following information:
 A personalized way to calculate your sleep schedule.
 ### Additional information about the project
 
-TODO: Write a compelling/creative/informative project description / summary
-
+Sleep Scheduler is an iOS app created using React Native that calculates the optimal sleep schedule based on user input. The app will also track recent sleep habits.
 
 ## Installation
 
