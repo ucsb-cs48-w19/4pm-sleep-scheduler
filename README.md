@@ -25,6 +25,11 @@ TODO: Write a compelling/creative/informative project description / summary
 
 TODO: List what a user needs to have installed before running the installation instructions below (e.g., git, which versions of Ruby/Rails)
 
+For Developers:
+Install NodeJS  https://nodejs.org/en/download/
+npm install
+npm start
+
 ### Gems
 
 TODO: List which gems you added to the project, and the purpose each gem serves in your app.
