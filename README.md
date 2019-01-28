@@ -7,7 +7,7 @@ Update your `README.md` using the template below. We are specifically interested
 
 Provide a README file with the following information:
 
-# Sleep Scheudler
+# Sleep Scheduler
 
 ## Project summary
 
