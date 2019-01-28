@@ -13,8 +13,7 @@ Provide a README file with the following information:
 
 ### One-sentence description of the project
 
-TODO: A 20-second elevator pitch of your project - its core idea summarized in one sentence.
-
+A personalized way to calculate your sleep schedule.
 ### Additional information about the project
 
 TODO: Write a compelling/creative/informative project description / summary
