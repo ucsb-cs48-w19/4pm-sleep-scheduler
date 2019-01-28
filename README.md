@@ -23,8 +23,6 @@ TODO: Write a compelling/creative/informative project description / summary
 
 ### Prerequisites
 
-TODO: List what a user needs to have installed before running the installation instructions below (e.g., git, which versions of Ruby/Rails)
-
 For Developers:
 
 Install NodeJS  https://nodejs.org/en/download/
