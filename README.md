@@ -1,12 +1,3 @@
-Update your `README.md` using the template below. We are specifically interested in the installation instructions (e.g., all the gems, how to load real or seed data, etc.). This sample README was developed for a Rails project, so you can swap the "Gems" section of the "Installation" instructions to include add-ons that are relevant to you.
-
-
-**Make sure to check out the repo anew (potentially on a loaned laptop) and test your installation instructions.**
-
-
-
-Provide a README file with the following information:
-
 # Sleep Scheduler
 
 ## Project summary
@@ -29,10 +20,6 @@ Install NodeJS  https://nodejs.org/en/download/
 npm install
 
 npm start
-
-### Gems
-
-TODO: List which gems you added to the project, and the purpose each gem serves in your app.
 
 ### Installation Steps
 
