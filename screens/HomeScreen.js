@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+	DatePickerIOS,
   Image,
   Platform,
   ScrollView,
@@ -12,9 +13,21 @@ import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 
 export default class HomeScreen extends React.Component {
+	constructor(props){
+		super(props);
+		this.state = {chosenDate: new Date()};
+		this.setDate = this.setDate.bind(this);
+
+	}
+
+	setDate(newDate) {
+		this.setState({chosenDate: newDate});
+
+	}
+
   static navigationOptions = {
     header: null,
-  };
+	};
 
   render() {
     return (
@@ -24,13 +37,19 @@ export default class HomeScreen extends React.Component {
             <Image
               source={
                 __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
+                  ? require('../assets/images/logo.png')
+                  : require('../assets/images/logo.png')
               }
               style={styles.welcomeImage}
             />
           </View>
-
+					<View style={styles.container}>
+						<DatePickerIOS
+							date={this.state.chosenDate}
+							onDateChange={this.setDate}
+							mode='time'
+						/>
+					</View>
           <View style={styles.getStartedContainer}>
             {this._maybeRenderDevelopmentModeWarning()}
 
