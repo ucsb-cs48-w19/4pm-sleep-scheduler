@@ -7,19 +7,41 @@ import {
   Text,
   TouchableOpacity,
   View,
+  DatePickerIOS,
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 
+
+
+  
+
+
 export default class HomeScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {chosenDate: new Date()};
+
+    this.setDate = this.setDate.bind(this);
+  
+  }
+
+  setDate(newDate) {
+    this.setState({chosenDate: newDate});
+  }
   static navigationOptions = {
     header: null,
   };
 
   render() {
     return (
+
+      
+      
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+          
+
           <View style={styles.welcomeContainer}>
             <Image
               source={
@@ -30,6 +52,19 @@ export default class HomeScreen extends React.Component {
               style={styles.welcomeImage}
             />
           </View>
+
+          <View style={styles.container}>
+            <DatePickerIOS
+              date={this.state.chosenDate}
+              onDateChange={this.setDate}
+              mode="time"/>
+              </View>
+          
+
+
+
+          
+
 
           <View style={styles.getStartedContainer}>
             {this._maybeRenderDevelopmentModeWarning()}
@@ -44,6 +79,8 @@ export default class HomeScreen extends React.Component {
 							Hello World!
             </Text>
           </View>
+
+          
 
           <View style={styles.helpContainer}>
             <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
@@ -60,6 +97,7 @@ export default class HomeScreen extends React.Component {
           </View>
         </View>
       </View>
+
     );
   }
 

@@ -3,7 +3,7 @@
   "expoServerPort": null,
   "packagerPort": null,
   "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerNgrokUrl": "https://gx-p9n.anonymous.4pm-sleep-scheduler.exp.direct",
+  "packagerNgrokUrl": "https://packager.gx-p9n.anonymous.4pm-sleep-scheduler.exp.direct",
+  "ngrokPid": 24133
 }
