@@ -11,25 +11,37 @@ import {
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
+import moment from "moment";
+
 
 export default class HomeScreen extends React.Component {
 	constructor(props){
 		super(props);
-		this.state = {chosenDate: new Date()};
+		this.state = {
+						chosenDate: new Date(),
+						isPicking: false,
+		};
 		this.setDate = this.setDate.bind(this);
-
 	}
 
 	setDate(newDate) {
 		this.setState({chosenDate: newDate});
-
 	}
+	onPressView = () => {
+		this.setState({
+			isPicking: !this.state.isPicking,
+		});
+	}
+
 
   static navigationOptions = {
     header: null,
 	};
 
   render() {
+		const ti = this.state.chosenDate;
+		const pickedTime = moment(ti).format("LT");
+		const sleepTime = moment(ti).subtract("8", "hours").format("LT");
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -42,7 +54,13 @@ export default class HomeScreen extends React.Component {
               }
               style={styles.welcomeImage}
             />
-          </View>
+          </View>	
+					<TouchableOpacity onPress={this.onPressView}>
+						<Text style = {styles.button}> Pick Time </Text>
+					</TouchableOpacity>
+					<View style = {styles.getStartedText}>
+						<Text>{'' + this.state.isPicking}</Text>
+					</View>	
 					<View style={styles.container}>
 						<DatePickerIOS
 							date={this.state.chosenDate}
@@ -52,16 +70,8 @@ export default class HomeScreen extends React.Component {
 					</View>
           <View style={styles.getStartedContainer}>
             {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-							Hello World!
-            </Text>
+            <Text style={styles.getStartedText}> { 'Time you want to wake up: ' + pickedTime
+						+ '\n' + 'Time to sleep: ' + sleepTime}</Text>
           </View>
 
           <View style={styles.helpContainer}>
@@ -70,14 +80,6 @@ export default class HomeScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
-        </View>
       </View>
     );
   }
@@ -121,6 +123,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+	button: {
+		alignItems: 'center',
+		backgroundColor: '#DDDDDD',
+		padding: 10,
+		fontSize: 20,
+    textAlign: 'center',
+    marginHorizontal: 75,
+	},		
   developmentModeText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
