@@ -30,15 +30,14 @@ const LinksStack = createStackNavigator({
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+  tabBarLabel: 'Shop',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
+      name={Platform.OS === 'ios' ? 'md-analytics' : 'md-link'}
     />
   ),
 };
-
 const SettingsStack = createStackNavigator({
   Settings: SettingsScreen,
 });

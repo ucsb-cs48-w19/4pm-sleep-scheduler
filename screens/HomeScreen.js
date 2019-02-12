@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+	AsyncStorage,
 	DatePickerIOS,
   Image,
   Platform,
@@ -32,7 +33,13 @@ export default class HomeScreen extends React.Component {
 			isPicking: !this.state.isPicking,
 		});
 	}
-
+	_storeData = async () => {
+		try {
+			await AsyncStorage.setItem( 'sleep_time', '' + this.state.chosenDate);
+		} catch (error) {
+			// Error saving data
+		}
+	};
 
   static navigationOptions = {
     header: null,

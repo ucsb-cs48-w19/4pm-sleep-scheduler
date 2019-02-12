@@ -17,15 +17,11 @@ For Developers:
 
 Install NodeJS  https://nodejs.org/en/download/
 
+### Installation Steps
+
 npm install
 
 npm start
-
-### Installation Steps
-
-TODO: Describe the installation process (making sure you mention `bundle install`).
-Instructions need to be such that a user can just copy/paste the commands to get things set up and running. 
-
 
 ## Functionality
 
