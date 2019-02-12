@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Alert,
 	AsyncStorage,
 	DatePickerIOS,
   Image,
@@ -19,20 +20,70 @@ export default class HomeScreen extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = {
-						chosenDate: new Date(),
+            chosenDate: new Date(),
+            currentTime: new Date(),
 						isPicking: false,
 		};
 		this.setDate = this.setDate.bind(this);
 	}
+
+  componentDidMount() {
+    this.interval = setInterval(() => this.setState({ currentTime: Date.now() }), 1000);
+  }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
 
 	setDate(newDate) {
 		this.setState({chosenDate: newDate});
 	}
 	onPressView = () => {
 		this.setState({
-			isPicking: !this.state.isPicking,
-		});
-	}
+			isPicking: true,
+    });
+    this.alertBedTime();
+  }
+  
+  alertBedTime = () => {
+    Alert.alert(
+      "It's bed time!" ,
+      'Do you want to sleep now?',
+      [
+        {
+          text: 'Ask me later', 
+          onPress: () => {
+            console.log('Ask me later pressed');
+            this.setState({
+              isPicking: false,
+            });
+          },
+        },
+        {
+          text: 'Cancel',
+          onPress: () => {
+            this.setState({
+              isPicking: false,
+            });
+          },
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => {
+          this.setState({
+            isPicking: false,
+          });
+          console.log('OK Pressed')},
+        },
+      ],
+      {cancelable: false},
+    );
+  }
+
+  checkBedTime = (LTime) => {
+    if(LTime === moment(this.state.currentTime).format("LT") )
+      return true;
+    return false;
+  }
+
 	_storeData = async () => {
 		try {
 			await AsyncStorage.setItem( 'sleep_time', '' + this.state.chosenDate);
@@ -48,7 +99,13 @@ export default class HomeScreen extends React.Component {
   render() {
 		const ti = this.state.chosenDate;
 		const pickedTime = moment(ti).format("LT");
-		const sleepTime = moment(ti).subtract("8", "hours").format("LT");
+    const sleepTime = moment(ti).subtract("8", "hours").format("LT");
+    if(this.checkBedTime(sleepTime) && !this.state.isPicking){
+      this.setState({
+        isPicking: true,
+      });
+      this.alertBedTime();
+    }
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>

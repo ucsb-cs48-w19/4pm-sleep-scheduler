@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 8818,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
   "expoServerNgrokUrl": "https://j5-g2i.matthewho.4pm-sleep-scheduler.exp.direct",
   "packagerNgrokUrl": "https://packager.j5-g2i.matthewho.4pm-sleep-scheduler.exp.direct",
-  "ngrokPid": 8838
+  "ngrokPid": 583
 }
