@@ -14,6 +14,7 @@ import {
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import moment from "moment";
+import { FULLSCREEN_UPDATE_PLAYER_DID_DISMISS } from 'expo/build/av/Video';
 
 
 export default class HomeScreen extends React.Component {
@@ -22,13 +23,20 @@ export default class HomeScreen extends React.Component {
 		this.state = {
             chosenDate: new Date(),
             currentTime: new Date(),
+            hasPicked: true,
 						isPicking: false,
 		};
 		this.setDate = this.setDate.bind(this);
 	}
 
   componentDidMount() {
-    this.interval = setInterval(() => this.setState({ currentTime: Date.now() }), 1000);
+    this.interval = setInterval(
+      () => {
+      this.setState({ 
+        currentTime: Date.now(),
+      });
+      this.checkBedTime(moment(this.state.chosenDate).subtract("8", "hours").format("LT"));
+    }, 1000);
   }
   componentWillUnmount() {
     clearInterval(this.interval);
@@ -39,9 +47,21 @@ export default class HomeScreen extends React.Component {
 	}
 	onPressView = () => {
 		this.setState({
-			isPicking: true,
+      isPicking: true,
+      hasPicked: false,
     });
-    this.alertBedTime();
+    Alert.alert(
+      'Your alarm has been set!',
+      '',
+      [
+        {text: 'OK', onPress: () => {
+            this.setState({
+              isPicking: false,
+            });
+          }
+        },
+      ]
+    )
   }
   
   alertBedTime = () => {
@@ -79,9 +99,30 @@ export default class HomeScreen extends React.Component {
   }
 
   checkBedTime = (LTime) => {
-    if(LTime === moment(this.state.currentTime).format("LT") )
-      return true;
-    return false;
+    if(LTime === moment(this.state.currentTime).format("LT")) {
+      if(!this.state.isPicking && !this.state.hasPicked){
+        this.setState({
+          isPicking: true,
+          hasPicked: true,
+        });
+        this.alertBedTime();
+      }
+    }
+  }
+
+  displayAlarmStatus = (time) => {
+    if(!this.state.hasPicked)
+      return(
+        <Text style={styles.getStartedText}>
+          Your alarm has been set for {time}.
+        </Text>
+      );
+    else
+      return(
+        <Text style={styles.getStartedText}>
+          Alarm has not been set.
+        </Text>
+      );
   }
 
 	_storeData = async () => {
@@ -100,12 +141,7 @@ export default class HomeScreen extends React.Component {
 		const ti = this.state.chosenDate;
 		const pickedTime = moment(ti).format("LT");
     const sleepTime = moment(ti).subtract("8", "hours").format("LT");
-    if(this.checkBedTime(sleepTime) && !this.state.isPicking){
-      this.setState({
-        isPicking: true,
-      });
-      this.alertBedTime();
-    }
+
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -120,10 +156,10 @@ export default class HomeScreen extends React.Component {
             />
           </View>	
 					<TouchableOpacity onPress={this.onPressView}>
-						<Text style = {styles.button}> Pick Time </Text>
+						<Text style = {styles.button}> Set Alert </Text>
 					</TouchableOpacity>
 					<View style = {styles.getStartedText}>
-						<Text>{'' + this.state.isPicking}</Text>
+						<Text>{'' + this.state.isPicking + '\nHP: ' + this.state.hasPicked}</Text>
 					</View>	
 					<View style={styles.container}>
 						<DatePickerIOS
@@ -133,7 +169,7 @@ export default class HomeScreen extends React.Component {
 						/>
 					</View>
           <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
+            {this.displayAlarmStatus(sleepTime)}
             <Text style={styles.getStartedText}> { 'Time you want to wake up: ' + pickedTime
 						+ '\n' + 'Time to sleep: ' + sleepTime}</Text>
           </View>
