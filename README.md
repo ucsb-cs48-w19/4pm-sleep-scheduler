@@ -13,31 +13,42 @@ Sleep Scheduler is an iOS app created using React Native that calculates the opt
 
 ### Prerequisites
 
-For Developers:
+Expo and NodeJS
 
 Install NodeJS  https://nodejs.org/en/download/
 
+
+
+
+
+
+
 ### Installation Steps
 
-npm install
+For Developers:
+
+npm install 
 
 npm start
 
+
+Then, with iphone that has expo installed as an app, go to your camera app and scan the QR code. This will prompt you to open expo and the app should be running there.
+
+
+
 ## Functionality
 
-TODO: Write usage instructions. Structuring it as a walkthrough can help structure this section,
-and showcase your features.
+
+Enter in a time that you want to wake up the next day. Our app will return the time you should go to sleep the night before so you can get optimal hours of sleep. Press button to set alert, and a pop up alert will show up at your bedtime.
 
 
 ## Known Problems
 
-TODO: Describe any known issues, bugs, odd behaviors or code smells. 
-Provide steps to reproduce the problem and/or name a file or a function where the problem lives.
+- Currently has debugging text on the left side (True or false flags)
+- Alarm changes as you scroll through the time picker wheel.
 
 
 ## Contributing
-
-TODO: Leave the steps below if you want others to contribute to your project.
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
@@ -45,7 +56,3 @@ TODO: Leave the steps below if you want others to contribute to your project.
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## License
-
-If you haven't already, add a file called `LICENSE.txt` with the text of the appropriate license.
-We recommend using the MIT license: <https://choosealicense.com/licenses/mit/>
