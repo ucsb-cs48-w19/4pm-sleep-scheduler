@@ -47,9 +47,7 @@ Pressing the button will set an alarm, as well as a pop-up that informs you to w
 - Alarm changes as you scroll through the time picker wheel.
 
 
-
 ## Contributing
-
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
