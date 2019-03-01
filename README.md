@@ -1,4 +1,4 @@
-# Sleep Scheduler [![Build Status](https://travis-ci.org/ucsb-cs48-w19/4pm-sleep-scheduler.svg?branch=master)](https://travis-ci.org/ucsb-cs48-w19/4pm-sleep-scheduler)
+# Sleep Scheduler
 
 ## Project summary
 
