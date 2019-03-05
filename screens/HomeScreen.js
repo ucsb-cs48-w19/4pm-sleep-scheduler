@@ -11,10 +11,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {List, ListItem, Overlay} from 'react-native-elements';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import moment from "moment";
 import { FULLSCREEN_UPDATE_PLAYER_DID_DISMISS } from 'expo/build/av/Video';
+import { FutureAlert } from '../components/FutureAlert';
 
 
 export default class HomeScreen extends React.Component {
@@ -22,34 +24,176 @@ export default class HomeScreen extends React.Component {
 		super(props);
 		this.state = {
             chosenDate: new Date(),
+            wakeTime: new Date(),
             currentTime: new Date(),
             hasPicked: true,
-						isPicking: false,
+            isPicking: false,
+            sleepHours: "8",
+            sleepMode: "hours",
+            isVisible: false,
+            isVisibleSetUp: true,
 		};
-		this.setDate = this.setDate.bind(this);
-	}
-
+    this.setDate = this.setDate.bind(this);
+    this.setSleep = this.setSleep.bind(this);
+  }
   componentDidMount() {
     this.interval = setInterval(
       () => {
       this.setState({ 
         currentTime: Date.now(),
       });
-      this.checkBedTime(moment(this.state.chosenDate).subtract("8", "hours").format("LT"));
+      this.checkBedTime(this.state.wakeTime);
     }, 1000);
   }
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
+
+  render() {
+		const ti = this.state.chosenDate;
+		const pickedTime = moment(ti).format("LT");
+    const sleepTime = moment(ti).subtract(this.state.sleepHours, "hours").format("LT");
+    
+
+    return(
+      <View style={styles.container}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <Overlay
+            isVisible={this.state.isVisibleSetUp}
+            windowBackgroundColor="rgba(0, 0, 0, .5)"
+            overlayBackgroundColor= "white"
+            width = "auto"
+            height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}> Pick your sleep calculation mode</Text>
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress= {() => { 
+                this.setState({
+                  sleepMode: "cycles",
+                  isVisibleSetUp: false,
+                });
+              }}>
+                <Text style = {styles.button}> Sleep Cycle</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => { 
+                this.setState({
+                  sleepMode: "hours",
+                  isVisible: true,
+                  isVisibleSetUp: false,
+                });
+              }}>
+                <Text style = {styles.button}> Hours</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+         
+        <Overlay
+          isVisible={this.state.isVisible}
+          windowBackgroundColor="rgba(0, 0, 0, .5)"
+          overlayBackgroundColor= "white"
+          width = "auto"
+          height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}>Pick a time to sleep</Text>
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => this.onPressSleep(7)}>
+                <Text style = {styles.button}> 7 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => this.onPressSleep(8)}>
+                <Text style = {styles.button}> 8 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => this.onPressSleep(9)}>
+                <Text style = {styles.button}> 9 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
+
+
+
+          <View style={styles.welcomeContainer}>
+            <Image
+              source={require('../assets/images/logo.png')}
+              style={styles.welcomeImage}
+            />
+          </View>	
+					<TouchableOpacity onPress={this.onPressView}>
+						<Text style = {styles.button}> Set Alert</Text>
+					</TouchableOpacity>
+
+
+
+					<View style = {styles.getStartedText}>
+						<Text>{
+              'isPicking:' + this.state.isPicking + 
+              '\nhasPicked: ' + this.state.hasPicked + 
+              '\nsleepHours: ' + this.state.sleepHours + 
+              '\nsleepMode: ' + this.state.sleepMode + 
+              '\nisVisible: ' + this.state.isVisible + 
+              '\nisVisibleSetUp: ' + this.state.isVisibleSetUp
+
+              }
+            </Text>
+					</View>	
+					<View style={styles.contentContainer2}>
+						<DatePickerIOS
+							date={this.state.chosenDate}
+							onDateChange={this.setDate}
+							mode='time'
+						/>
+					</View>
+          <View style={styles.getStartedContainer}>
+            {this.displayAlarmStatus(sleepTime)}
+            <Text style={styles.getStartedText}> { 'Time you want to wake up: ' + pickedTime
+						+ '\n' + 'Time to sleep: ' + sleepTime}</Text>
+          </View>
+
+          <View style={styles.helpContainer}>
+            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
+              <Text style={styles.helpLinkText}>This is the repository link	</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
+
+
 	setDate(newDate) {
 		this.setState({chosenDate: newDate});
-	}
+  }
+  
+  setSleep(newTime){
+    this.setState({
+      wakeTime: moment(newTime).subtract(this.state.sleepHours, "hours").format("LT"),
+    });
+  }
+
+  onPressSleep = (hours) =>{
+      this.setState({
+          isVisible: false,
+          sleepHours: hours,
+      })
+  }
+
 	onPressView = () => {
+    const ti = Object.assign({}, this.state.chosenDate);
 		this.setState({
       isPicking: true,
       hasPicked: false,
     });
+    this.setSleep(ti);
     Alert.alert(
       'Your alarm has been set!',
       '',
@@ -114,7 +258,7 @@ export default class HomeScreen extends React.Component {
     if(!this.state.hasPicked)
       return(
         <Text style={styles.getStartedText}>
-          Your alarm has been set for {time}.
+          Your alarm has been set for {this.state.wakeTime}.
         </Text>
       );
     else
@@ -135,55 +279,8 @@ export default class HomeScreen extends React.Component {
 
   static navigationOptions = {
     header: null,
-	};
-
-  render() {
-		const ti = this.state.chosenDate;
-		const pickedTime = moment(ti).format("LT");
-    const sleepTime = moment(ti).subtract("8", "hours").format("LT");
-
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/logo.png')
-                  : require('../assets/images/logo.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>	
-					<TouchableOpacity onPress={this.onPressView}>
-						<Text style = {styles.button}> Set Alert </Text>
-					</TouchableOpacity>
-					<View style = {styles.getStartedText}>
-						<Text>{'' + this.state.isPicking + '\nHP: ' + this.state.hasPicked}</Text>
-					</View>	
-					<View style={styles.container}>
-						<DatePickerIOS
-							date={this.state.chosenDate}
-							onDateChange={this.setDate}
-							mode='time'
-						/>
-					</View>
-          <View style={styles.getStartedContainer}>
-            {this.displayAlarmStatus(sleepTime)}
-            <Text style={styles.getStartedText}> { 'Time you want to wake up: ' + pickedTime
-						+ '\n' + 'Time to sleep: ' + sleepTime}</Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>This is the repository link	</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
-
+  };
+  
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
       const learnMoreButton = (
@@ -218,6 +315,8 @@ export default class HomeScreen extends React.Component {
   };
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -240,6 +339,9 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 30,
+  },
+  contentContainer2: {
+    marginHorizontal: 80,
   },
   welcomeContainer: {
     alignItems: 'center',
@@ -274,6 +376,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
   },
+  getStartedText2: {
+    fontSize: 23,
+    color: 'rgba(50,50,50, 1)',
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+
   tabBarInfoContainer: {
     position: 'absolute',
     bottom: 0,

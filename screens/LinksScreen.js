@@ -1,19 +1,39 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
-    title: 'Links',
+    title: 'Achievements',
   };
+
+
+
+
+  renderRow({item}) {
+    return (
+      <ListItem
+        roundAvatar
+        title={item.name}
+        subtitle={item.subtitle}
+        avatar={{uri:item.avatar_url}}
+      />
+    )
+  }
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        {/* Go ahead and delete ExpoLinksView and replace it with your
-           * content, we just wanted to provide you with some helpful links */}
-        <ExpoLinksView />
-      </ScrollView>
+      <View style={styles.container}>
+        <FlatList
+          data={[
+            {key: 'Background1'},
+            {key: 'Background2'},
+            {key: 'Avatar1'},
+            {key: 'Avatar2'},
+          ]}
+          renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
+        />
+      </View>
     );
   }
 }
