@@ -8,10 +8,11 @@ describe('HelloWorld Module', function() {
   });
 });
 
-describe('App test', () => {
-  it('should render properly', () => {
-    const wrapper = shallow(<App />);
-
-    expect(wrapper.length).to.eql(1);
-  });
+describe('HomeScreen test', function() {
+	it('should test time', function(){
+		const sortingFunctions = require("../app/screens/HomeScreen.js");
+		var sleep = '11:00 PM';
+		
+		assert.equal({isPicking: true, hasPicked: true},checkBedTime(sleep).setState());
+	});
 });
