@@ -1,5 +1,3 @@
-import React from 'react';
-
 var assert = require('assert');
 describe('HelloWorld Module', function() {
   it('should return -1 when "Hello" is missing', function() {
