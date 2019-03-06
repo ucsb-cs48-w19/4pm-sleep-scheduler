@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {List, ListItem, Overlay} from 'react-native-elements';
 import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import moment from "moment";
@@ -19,37 +20,154 @@ import { FULLSCREEN_UPDATE_PLAYER_DID_DISMISS } from 'expo/build/av/Video';
 
 export default class HomeScreen extends React.Component {
 	constructor(props){
-		super(props);
+    super(props);
+    //count is the number of succesful wake-ups
 		this.state = {
             chosenDate: new Date(),
+            wakeTimeObj: null,
+            wakeTime: "",
             currentTime: new Date(),
+            count: 0,
             hasPicked: true,
-						isPicking: false,
+            isPicking: false,
+            sleepHours: 8,
+            sleepMode: "hours",
+            isVisible: false,
+            isVisibleCycle: false,
+            isVisibleSetUp: true,
 		};
-		this.setDate = this.setDate.bind(this);
-	}
-
+    this.setDate = this.setDate.bind(this);
+    this.setSleep = this.setSleep.bind(this);
+  }
   componentDidMount() {
+    this._storeData();
     this.interval = setInterval(
       () => {
-      this.setState({ 
-        currentTime: Date.now(),
-      });
-      this.checkBedTime(moment(this.state.chosenDate).subtract("8", "hours").format("LT"));
+        this.checkBedTime(this.state.wakeTime);
+      try{
+        this._getHours();
+        this._getCount();
+        this.setState({ 
+          currentTime: Date.now(),
+        });
+      } catch(error){
+
+      }
     }, 1000);
   }
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
+
+  render() {
+		const ti = this.state.chosenDate;
+		const pickedTime = moment(ti).format("LT");
+    const sleepTime = moment(ti).subtract(this.state.sleepHours, "hours").format("LT");
+    
+
+    return(
+      <View style={styles.container}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+
+
+
+          <View style={styles.welcomeContainer}>
+            {this._logoPicker()}
+          </View>	
+					
+
+
+
+					
+          <View style={styles.contentContainer}>
+              <Text style={styles.getStartedText2}>What time do you want to wake up? </Text>
+          </View>
+
+
+					<View style={styles.contentContainer2}>
+						<DatePickerIOS
+							date={this.state.chosenDate}
+							onDateChange={this.setDate}
+							mode='time'
+						/>
+					</View>
+
+          <TouchableOpacity onPress={this.onPressView}>
+						<Text style = {styles.button}> Set Alert</Text>
+					</TouchableOpacity>
+
+          <View style={styles.getStartedContainer}>
+            {this.displayAlarmStatus()}
+            <Text style={styles.getStartedText}> { 'Time you want to wake up: ' + pickedTime
+						+ '\n' + 'Time to sleep: ' + sleepTime}</Text>
+          </View>
+
+          <View style={styles.helpContainer}>
+            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
+              <Text style={styles.helpLinkText}>This is the repository link	</Text>
+            </TouchableOpacity>
+          </View>
+
+
+        
+        </ScrollView>
+      </View>
+    );
+  }
+
+/*DEBUG OUTPUT: <View style = {styles.getStartedText}>
+						<Text>{
+              'count: ' + this.state.count + 
+              '\nvalid: ' + (typeof this.state.count) + ' ' + (typeof this.state.sleepHours) +
+              '\nisPicking:' + this.state.isPicking + 
+              '\nhasPicked: ' + this.state.hasPicked + 
+              '\nsleepHours: ' + this.state.sleepHours + 
+              '\nsleepMode: ' + this.state.sleepMode + 
+              '\nisVisible: ' + this.state.isVisible + 
+              '\nisVisibleSetUp: ' + this.state.isVisibleSetUp
+              }
+            </Text>
+					</View>	  */
+
+
 	setDate(newDate) {
 		this.setState({chosenDate: newDate});
-	}
+  }
+  
+  setSleep(newTime){
+    this.setState({
+      wakeTime: moment(newTime).subtract(this.state.sleepHours, "hours").format("LT"),
+      wakeTimeObj: new Date(newTime),
+      hasPicked: false,
+    });
+  }
+
+  onPressSleep = (hours) =>{
+      this.setState({
+          isVisible: false,
+          sleepHours: hours,
+      });
+      let i = 0;
+      for(; i < 10; i++){
+        this._storeData();
+      }
+      this.setState({
+          isVisible: false,
+          sleepHours: hours,
+      });
+      i = 0;
+      for(; i < 10; i++){
+        this._storeData();
+      }
+  }
+
 	onPressView = () => {
 		this.setState({
       isPicking: true,
       hasPicked: false,
     });
+    this.setSleep(this.state.chosenDate);
     Alert.alert(
       'Your alarm has been set!',
       '',
@@ -70,13 +188,22 @@ export default class HomeScreen extends React.Component {
       'Do you want to sleep now?',
       [
         {
-          text: 'Ask me later', 
+          text: 'Remind me in 5 Minutes', 
           onPress: () => {
             console.log('Ask me later pressed');
             this.setState({
               isPicking: false,
             });
+            this.setSleep(moment(this.state.wakeTimeObj).add(5, "m"));
           },
+        },
+        {text: 'OK', onPress: () => {
+          this.setState({
+            isPicking: false,
+            count: this.state.count + 1, 
+          });
+          this._storeData();          
+          console.log('OK Pressed')},
         },
         {
           text: 'Cancel',
@@ -85,13 +212,6 @@ export default class HomeScreen extends React.Component {
               isPicking: false,
             });
           },
-          style: 'cancel',
-        },
-        {text: 'OK', onPress: () => {
-          this.setState({
-            isPicking: false,
-          });
-          console.log('OK Pressed')},
         },
       ],
       {cancelable: false},
@@ -110,11 +230,11 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  displayAlarmStatus = (time) => {
+  displayAlarmStatus = () => {
     if(!this.state.hasPicked)
       return(
         <Text style={styles.getStartedText}>
-          Your alarm has been set for {time}.
+          Your alarm has been set for {this.state.wakeTime}.
         </Text>
       );
     else
@@ -125,65 +245,75 @@ export default class HomeScreen extends React.Component {
       );
   }
 
+  _logoPicker = ()=>{
+    if(this.state.count <= 0){
+      return(<Image
+        source={require('../assets/images/logo.png')}
+        style={styles.welcomeImage}
+      />);
+    } else if (this.state.count == 1){
+      return(<Image
+        source={require('../assets/images/logo2.png')}
+        style={styles.welcomeImage}
+      />);
+    } else if (this.state.count == 2){
+      return(<Image
+        source={require('../assets/images/logo3.png')}
+        style={styles.welcomeImage}
+      />);
+    } else if (this.state.count >= 3){
+      return(<Image
+        source={require('../assets/images/logo4.png')}
+        style={styles.welcomeImage}
+      />);
+    }
+
+  }
+
+  /*        chosenDate: new Date(),
+            wakeTimeObj: null,
+            wakeTime: "",
+            currentTime: new Date(),
+            count: 0,
+            hasPicked: true,
+            isPicking: false,
+            sleepHours: "8",
+            sleepMode: "hours",
+            isVisible: false,
+            isVisibleCycle: false,
+            isVisibleSetUp: true,*/
 	_storeData = async () => {
 		try {
-			await AsyncStorage.setItem( 'sleep_time', '' + this.state.chosenDate);
+      const s = this.state.sleepHours;
+      const c = this.state.count;
+      await AsyncStorage.setItem('s', s + '');
+      await AsyncStorage.setItem('count', c + '');
 		} catch (error) {
-			// Error saving data
+      
 		}
-	};
+  };
+
+  _getHours = async() => {
+    try {
+      const s = await AsyncStorage.getItem('s');
+      this.setState({sleepHours: parseInt(s)});
+		} catch (error) {
+    }
+    return sleepHours;
+  }
+  _getCount = async() => {
+    try{
+      const _count = await AsyncStorage.getItem('count');
+      this.setState({count: parseInt(_count)});
+    } catch(error) {
+    }
+    return count;
+  }
 
   static navigationOptions = {
     header: null,
-	};
-
-  render() {
-		const ti = this.state.chosenDate;
-		const pickedTime = moment(ti).format("LT");
-    const sleepTime = moment(ti).subtract("8", "hours").format("LT");
-
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/logo.png')
-                  : require('../assets/images/logo.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>	
-					<TouchableOpacity onPress={this.onPressView}>
-						<Text style = {styles.button}> Set Alert </Text>
-					</TouchableOpacity>
-					<View style = {styles.getStartedText}>
-						<Text>{'' + this.state.isPicking + '\nHP: ' + this.state.hasPicked}</Text>
-					</View>	
-					<View style={styles.container}>
-						<DatePickerIOS
-							date={this.state.chosenDate}
-							onDateChange={this.setDate}
-							mode='time'
-						/>
-					</View>
-          <View style={styles.getStartedContainer}>
-            {this.displayAlarmStatus(sleepTime)}
-            <Text style={styles.getStartedText}> { 'Time you want to wake up: ' + pickedTime
-						+ '\n' + 'Time to sleep: ' + sleepTime}</Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>This is the repository link	</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </View>
-    );
-  }
-
+  };
+  
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
       const learnMoreButton = (
@@ -218,6 +348,8 @@ export default class HomeScreen extends React.Component {
   };
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -241,10 +373,13 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingTop: 30,
   },
+  contentContainer2: {
+    marginHorizontal: 80,
+  },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: 5,
+    marginBottom: 5,
   },
   welcomeImage: {
     width: 100,
@@ -274,6 +409,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     textAlign: 'center',
   },
+  getStartedText2: {
+    fontSize: 23,
+    color: 'rgba(50,50,50, 1)',
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+
   tabBarInfoContainer: {
     position: 'absolute',
     bottom: 0,
@@ -314,3 +456,109 @@ const styles = StyleSheet.create({
     color: '#2e78b7',
   },
 });
+
+
+/*
+        <Overlay
+            isVisible={this.state.isVisibleSetUp}
+            windowBackgroundColor="rgba(0, 0, 0, .5)"
+            overlayBackgroundColor= "white"
+            width = "auto"
+            height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}> Pick your sleep calculation mode</Text>
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress= {() => { 
+                this.setState({
+                  sleepMode: "cycles",
+                  isVisibleSetUp: false,
+                  isVisibleCycle: true,
+                });
+              }}>
+                <Text style = {styles.button}> Sleep Cycle</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => { 
+                this.setState({
+                  sleepMode: "hours",
+                  isVisible: true,
+                  isVisibleSetUp: false,
+                });
+              }}>
+                <Text style = {styles.button}> Hours</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
+        <Overlay
+          isVisible={this.state.isVisibleCycle}
+          windowBackgroundColor="rgba(0, 0, 0, .5)"
+          overlayBackgroundColor= "white"
+          width = "auto"
+          height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}>Pick your number of sleep Cycles</Text>
+            <View style = {styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => {
+                this.onPressSleep(7.5);
+                this.onPressSleep(7.5);
+                this.setState({isVisibleCycle: false,})
+              }}>
+                <Text style = {styles.button}> 5 Cycles</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => {
+                this.onPressSleep(9);
+                this.onPressSleep(9);
+                this.setState({isVisibleCycle: false,})
+              }}>
+                <Text style = {styles.button}> 6 Cycles</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
+        <Overlay
+          isVisible={this.state.isVisible}
+          windowBackgroundColor="rgba(0, 0, 0, .5)"
+          overlayBackgroundColor= "white"
+          width = "auto"
+          height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}>Pick a time to sleep</Text>
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => {
+                this.onPressSleep(7);
+                this.onPressSleep(7);
+              }}>
+                <Text style = {styles.button}> 7 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => {
+                this.onPressSleep(8);
+                this.onPressSleep(8);
+              }}>
+                <Text style = {styles.button}> 8 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => {
+                this.onPressSleep(9);
+                this.onPressSleep(9);
+              }}>
+                <Text style = {styles.button}> 9 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
+
+
+*/
