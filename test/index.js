@@ -1,5 +1,4 @@
 var assert = require('assert');
-var sleep = require('./calcSleep.js');
 
 describe('HelloWorld Module', function() {
   it('should return -1 when "Hello" is missing', function() {
