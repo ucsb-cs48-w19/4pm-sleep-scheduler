@@ -17,3 +17,4 @@ describe('Sleep time test', function() {
 		// Invoke done when the test is complete.
 		done();
 	});
+});
