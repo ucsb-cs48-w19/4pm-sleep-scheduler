@@ -12,9 +12,12 @@ describe('HelloWorld Module', function() {
 describe('Testing sleep calculator', function() {
 	it('should return 9:00 - 8 hours = 1:00', function(){
 		const sleepFunction = require("../sleepCalc.js");
-		var time = 9;
-		var hours = 8;
 		var result = sleepFunction.sleepTime(9,8);
 		assert.equal("1:00",result);
+	});
+	it('should return 1:00 - 7 hours = 18:00', function(){
+		const sleepFunction = require("../sleepCalc.js");
+		var result = sleepFunction.sleepTime(1,7);
+		assert.equal("18:00",result);
 	});
 });
