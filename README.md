@@ -36,6 +36,8 @@ Note: In order for the app to run properly, you MUST be on the same wifi as the 
 
 ## Functionality
 
+When entering the app, choose whether you would like to receive an output based on a sleep cycle, or would rather have a strict number of hours for the application to go by.
+
 Enter in a time that you want to wake up the next day, and our app will return the time you should go to sleep the night before so you can get the optimal number of hours of sleep.
 
 Pressing the button will set an alarm, as well as a pop-up that informs you to which time the alarm is set.  Once that time is reached, a pop-up alert will show up in the app to inform you that it is time to go to sleep.
