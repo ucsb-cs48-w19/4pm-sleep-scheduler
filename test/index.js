@@ -9,12 +9,3 @@ describe('HelloWorld Module', function() {
     assert.equal(0, "Hello World, how are you?".indexOf("Hello"));
   });
 });
-
-describe('Sleep time test', function() {
-	// And then we describe our testcases.
-	it('should return 9:00 - 8 hours = 1:00', function(done) {
-		assert.equal(sleep.sleepTime(9,8), "1:00");
-		// Invoke done when the test is complete.
-		done();
-	});
-});
