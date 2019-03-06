@@ -30,7 +30,7 @@ const LinksStack = createStackNavigator({
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Shop',
+  tabBarLabel: 'Achievements',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}

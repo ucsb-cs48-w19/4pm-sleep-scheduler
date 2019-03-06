@@ -296,7 +296,7 @@ export default class HomeScreen extends React.Component {
   _getHours = async() => {
     try {
       const s = await AsyncStorage.getItem('s');
-      this.setState({sleepHours: parseInt(s)});
+      this.setState({sleepHours: parseFloat(s)});
 		} catch (error) {
     }
     return sleepHours;
