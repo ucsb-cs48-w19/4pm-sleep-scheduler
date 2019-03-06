@@ -13,9 +13,6 @@ describe('HomeScreen test', function() {
 		const sortingFunctions = require("../app/screens/HomeScreen.js");
 		var sleep = '11:00 PM';
 		
-		assert.equal({
-          isPicking: true,
-          hasPicked: true,
-        },checkBedTime(sleep).setState());
+		assert.equal({isPicking: true, hasPicked: true},checkBedTime(sleep).setState());
 	});
 });
