@@ -21,16 +21,20 @@ import { FutureAlert } from '../components/FutureAlert';
 
 export default class HomeScreen extends React.Component {
 	constructor(props){
-		super(props);
+    super(props);
+    //count is the number of succesful wake-ups
 		this.state = {
             chosenDate: new Date(),
-            wakeTime: new Date(),
+            wakeTimeObj: null,
+            wakeTime: "",
             currentTime: new Date(),
+            count: 0,
             hasPicked: true,
             isPicking: false,
             sleepHours: "8",
             sleepMode: "hours",
             isVisible: false,
+            isVisibleCycle: false,
             isVisibleSetUp: true,
 		};
     this.setDate = this.setDate.bind(this);
@@ -73,6 +77,7 @@ export default class HomeScreen extends React.Component {
                 this.setState({
                   sleepMode: "cycles",
                   isVisibleSetUp: false,
+                  isVisibleCycle: true,
                 });
               }}>
                 <Text style = {styles.button}> Sleep Cycle</Text>
@@ -91,7 +96,35 @@ export default class HomeScreen extends React.Component {
             </View> 
           </View>
         </Overlay>
-         
+
+        <Overlay
+          isVisible={this.state.isVisibleCycle}
+          windowBackgroundColor="rgba(0, 0, 0, .5)"
+          overlayBackgroundColor= "white"
+          width = "auto"
+          height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}>Pick your number of sleep Cycles</Text>
+            <View style = {styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => {
+                this.onPressSleep(7.5);
+                this.setState({isVisibleCycle: false,})
+              }}>
+                <Text style = {styles.button}> 5 Cycles</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => {
+                this.onPressSleep(9);
+                this.setState({isVisibleCycle: false,})
+              }}>
+                <Text style = {styles.button}> 6 Cycles</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
         <Overlay
           isVisible={this.state.isVisible}
           windowBackgroundColor="rgba(0, 0, 0, .5)"
@@ -128,24 +161,16 @@ export default class HomeScreen extends React.Component {
               style={styles.welcomeImage}
             />
           </View>	
-					<TouchableOpacity onPress={this.onPressView}>
-						<Text style = {styles.button}> Set Alert</Text>
-					</TouchableOpacity>
+					
 
 
 
-					<View style = {styles.getStartedText}>
-						<Text>{
-              'isPicking:' + this.state.isPicking + 
-              '\nhasPicked: ' + this.state.hasPicked + 
-              '\nsleepHours: ' + this.state.sleepHours + 
-              '\nsleepMode: ' + this.state.sleepMode + 
-              '\nisVisible: ' + this.state.isVisible + 
-              '\nisVisibleSetUp: ' + this.state.isVisibleSetUp
+					
+          <View style={styles.contentContainer}>
+              <Text style={styles.getStartedText2}>What time do you want to wake up? </Text>
+          </View>
 
-              }
-            </Text>
-					</View>	
+
 					<View style={styles.contentContainer2}>
 						<DatePickerIOS
 							date={this.state.chosenDate}
@@ -153,8 +178,13 @@ export default class HomeScreen extends React.Component {
 							mode='time'
 						/>
 					</View>
+
+          <TouchableOpacity onPress={this.onPressView}>
+						<Text style = {styles.button}> Set Alert</Text>
+					</TouchableOpacity>
+
           <View style={styles.getStartedContainer}>
-            {this.displayAlarmStatus(sleepTime)}
+            {this.displayAlarmStatus()}
             <Text style={styles.getStartedText}> { 'Time you want to wake up: ' + pickedTime
 						+ '\n' + 'Time to sleep: ' + sleepTime}</Text>
           </View>
@@ -164,6 +194,21 @@ export default class HomeScreen extends React.Component {
               <Text style={styles.helpLinkText}>This is the repository link	</Text>
             </TouchableOpacity>
           </View>
+
+
+        <View style = {styles.getStartedText}>
+						<Text>{
+              'count: ' + this.state.count + 
+              '\nisPicking:' + this.state.isPicking + 
+              '\nhasPicked: ' + this.state.hasPicked + 
+              '\nsleepHours: ' + this.state.sleepHours + 
+              '\nsleepMode: ' + this.state.sleepMode + 
+              '\nisVisible: ' + this.state.isVisible + 
+              '\nisVisibleSetUp: ' + this.state.isVisibleSetUp
+              
+              }
+            </Text>
+					</View>	  
         </ScrollView>
       </View>
     );
@@ -177,6 +222,8 @@ export default class HomeScreen extends React.Component {
   setSleep(newTime){
     this.setState({
       wakeTime: moment(newTime).subtract(this.state.sleepHours, "hours").format("LT"),
+      wakeTimeObj: new Date(newTime),
+      hasPicked: false,
     });
   }
 
@@ -188,12 +235,12 @@ export default class HomeScreen extends React.Component {
   }
 
 	onPressView = () => {
-    const ti = Object.assign({}, this.state.chosenDate);
+    //const ti = Object.assign({}, this.state.chosenDate);
 		this.setState({
       isPicking: true,
       hasPicked: false,
     });
-    this.setSleep(ti);
+    this.setSleep(this.state.chosenDate);
     Alert.alert(
       'Your alarm has been set!',
       '',
@@ -220,6 +267,7 @@ export default class HomeScreen extends React.Component {
             this.setState({
               isPicking: false,
             });
+            this.setSleep(moment(this.state.wakeTimeObj).add(5, "m"));
           },
         },
         {
@@ -234,6 +282,7 @@ export default class HomeScreen extends React.Component {
         {text: 'OK', onPress: () => {
           this.setState({
             isPicking: false,
+            count: this.state.count + 1, 
           });
           console.log('OK Pressed')},
         },
@@ -254,7 +303,7 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  displayAlarmStatus = (time) => {
+  displayAlarmStatus = () => {
     if(!this.state.hasPicked)
       return(
         <Text style={styles.getStartedText}>
@@ -345,8 +394,8 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: 5,
+    marginBottom: 5,
   },
   welcomeImage: {
     width: 100,
