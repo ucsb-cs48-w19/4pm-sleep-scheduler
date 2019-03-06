@@ -16,7 +16,6 @@ import { WebBrowser } from 'expo';
 import { MonoText } from '../components/StyledText';
 import moment from "moment";
 import { FULLSCREEN_UPDATE_PLAYER_DID_DISMISS } from 'expo/build/av/Video';
-import { FutureAlert } from '../components/FutureAlert';
 
 
 export default class HomeScreen extends React.Component {
@@ -31,7 +30,7 @@ export default class HomeScreen extends React.Component {
             count: 0,
             hasPicked: true,
             isPicking: false,
-            sleepHours: "8",
+            sleepHours: 8,
             sleepMode: "hours",
             isVisible: false,
             isVisibleCycle: false,
@@ -41,12 +40,19 @@ export default class HomeScreen extends React.Component {
     this.setSleep = this.setSleep.bind(this);
   }
   componentDidMount() {
+    this._storeData();
     this.interval = setInterval(
       () => {
-      this.setState({ 
-        currentTime: Date.now(),
-      });
-      this.checkBedTime(this.state.wakeTime);
+        this.checkBedTime(this.state.wakeTime);
+      try{
+        this._getHours();
+        this._getCount();
+        this.setState({ 
+          currentTime: Date.now(),
+        });
+      } catch(error){
+
+      }
     }, 1000);
   }
   componentWillUnmount() {
@@ -63,103 +69,11 @@ export default class HomeScreen extends React.Component {
     return(
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <Overlay
-            isVisible={this.state.isVisibleSetUp}
-            windowBackgroundColor="rgba(0, 0, 0, .5)"
-            overlayBackgroundColor= "white"
-            width = "auto"
-            height = "auto"
-        >
-          <View style={styles.welcomeContainer}>
-            <Text style = {styles.getStartedText2}> Pick your sleep calculation mode</Text>
-            <View style = {styles.welcomeContainer}>
-              <TouchableOpacity onPress= {() => { 
-                this.setState({
-                  sleepMode: "cycles",
-                  isVisibleSetUp: false,
-                  isVisibleCycle: true,
-                });
-              }}>
-                <Text style = {styles.button}> Sleep Cycle</Text>
-              </TouchableOpacity>
-            </View> 
-            <View style = {styles.welcomeContainer}>
-              <TouchableOpacity onPress={() => { 
-                this.setState({
-                  sleepMode: "hours",
-                  isVisible: true,
-                  isVisibleSetUp: false,
-                });
-              }}>
-                <Text style = {styles.button}> Hours</Text>
-              </TouchableOpacity>
-            </View> 
-          </View>
-        </Overlay>
-
-        <Overlay
-          isVisible={this.state.isVisibleCycle}
-          windowBackgroundColor="rgba(0, 0, 0, .5)"
-          overlayBackgroundColor= "white"
-          width = "auto"
-          height = "auto"
-        >
-          <View style={styles.welcomeContainer}>
-            <Text style = {styles.getStartedText2}>Pick your number of sleep Cycles</Text>
-            <View style = {styles.welcomeContainer}>
-            <TouchableOpacity onPress={() => {
-                this.onPressSleep(7.5);
-                this.setState({isVisibleCycle: false,})
-              }}>
-                <Text style = {styles.button}> 5 Cycles</Text>
-              </TouchableOpacity>
-            </View> 
-            <View style = {styles.welcomeContainer}>
-              <TouchableOpacity onPress={() => {
-                this.onPressSleep(9);
-                this.setState({isVisibleCycle: false,})
-              }}>
-                <Text style = {styles.button}> 6 Cycles</Text>
-              </TouchableOpacity>
-            </View> 
-          </View>
-        </Overlay>
-
-        <Overlay
-          isVisible={this.state.isVisible}
-          windowBackgroundColor="rgba(0, 0, 0, .5)"
-          overlayBackgroundColor= "white"
-          width = "auto"
-          height = "auto"
-        >
-          <View style={styles.welcomeContainer}>
-            <Text style = {styles.getStartedText2}>Pick a time to sleep</Text>
-            <View style = {styles.welcomeContainer}>
-              <TouchableOpacity onPress={() => this.onPressSleep(7)}>
-                <Text style = {styles.button}> 7 Hours</Text>
-              </TouchableOpacity>
-            </View> 
-            <View style = {styles.welcomeContainer}>
-              <TouchableOpacity onPress={() => this.onPressSleep(8)}>
-                <Text style = {styles.button}> 8 Hours</Text>
-              </TouchableOpacity>
-            </View> 
-            <View style = {styles.welcomeContainer}>
-              <TouchableOpacity onPress={() => this.onPressSleep(9)}>
-                <Text style = {styles.button}> 9 Hours</Text>
-              </TouchableOpacity>
-            </View> 
-          </View>
-        </Overlay>
-
 
 
 
           <View style={styles.welcomeContainer}>
-            <Image
-              source={require('../assets/images/logo.png')}
-              style={styles.welcomeImage}
-            />
+            {this._logoPicker()}
           </View>	
 					
 
@@ -196,23 +110,25 @@ export default class HomeScreen extends React.Component {
           </View>
 
 
-        <View style = {styles.getStartedText}>
+        
+        </ScrollView>
+      </View>
+    );
+  }
+
+/*DEBUG OUTPUT: <View style = {styles.getStartedText}>
 						<Text>{
               'count: ' + this.state.count + 
+              '\nvalid: ' + (typeof this.state.count) + ' ' + (typeof this.state.sleepHours) +
               '\nisPicking:' + this.state.isPicking + 
               '\nhasPicked: ' + this.state.hasPicked + 
               '\nsleepHours: ' + this.state.sleepHours + 
               '\nsleepMode: ' + this.state.sleepMode + 
               '\nisVisible: ' + this.state.isVisible + 
               '\nisVisibleSetUp: ' + this.state.isVisibleSetUp
-              
               }
             </Text>
-					</View>	  
-        </ScrollView>
-      </View>
-    );
-  }
+					</View>	  */
 
 
 	setDate(newDate) {
@@ -231,11 +147,22 @@ export default class HomeScreen extends React.Component {
       this.setState({
           isVisible: false,
           sleepHours: hours,
-      })
+      });
+      let i = 0;
+      for(; i < 10; i++){
+        this._storeData();
+      }
+      this.setState({
+          isVisible: false,
+          sleepHours: hours,
+      });
+      i = 0;
+      for(; i < 10; i++){
+        this._storeData();
+      }
   }
 
 	onPressView = () => {
-    //const ti = Object.assign({}, this.state.chosenDate);
 		this.setState({
       isPicking: true,
       hasPicked: false,
@@ -261,7 +188,7 @@ export default class HomeScreen extends React.Component {
       'Do you want to sleep now?',
       [
         {
-          text: 'Ask me later', 
+          text: 'Remind me in 5 Minutes', 
           onPress: () => {
             console.log('Ask me later pressed');
             this.setState({
@@ -270,6 +197,14 @@ export default class HomeScreen extends React.Component {
             this.setSleep(moment(this.state.wakeTimeObj).add(5, "m"));
           },
         },
+        {text: 'OK', onPress: () => {
+          this.setState({
+            isPicking: false,
+            count: this.state.count + 1, 
+          });
+          this._storeData();          
+          console.log('OK Pressed')},
+        },
         {
           text: 'Cancel',
           onPress: () => {
@@ -277,14 +212,6 @@ export default class HomeScreen extends React.Component {
               isPicking: false,
             });
           },
-          style: 'cancel',
-        },
-        {text: 'OK', onPress: () => {
-          this.setState({
-            isPicking: false,
-            count: this.state.count + 1, 
-          });
-          console.log('OK Pressed')},
         },
       ],
       {cancelable: false},
@@ -318,13 +245,70 @@ export default class HomeScreen extends React.Component {
       );
   }
 
+  _logoPicker = ()=>{
+    if(this.state.count <= 0){
+      return(<Image
+        source={require('../assets/images/logo.png')}
+        style={styles.welcomeImage}
+      />);
+    } else if (this.state.count == 1){
+      return(<Image
+        source={require('../assets/images/logo2.png')}
+        style={styles.welcomeImage}
+      />);
+    } else if (this.state.count == 2){
+      return(<Image
+        source={require('../assets/images/logo3.png')}
+        style={styles.welcomeImage}
+      />);
+    } else if (this.state.count >= 3){
+      return(<Image
+        source={require('../assets/images/logo4.png')}
+        style={styles.welcomeImage}
+      />);
+    }
+
+  }
+
+  /*        chosenDate: new Date(),
+            wakeTimeObj: null,
+            wakeTime: "",
+            currentTime: new Date(),
+            count: 0,
+            hasPicked: true,
+            isPicking: false,
+            sleepHours: "8",
+            sleepMode: "hours",
+            isVisible: false,
+            isVisibleCycle: false,
+            isVisibleSetUp: true,*/
 	_storeData = async () => {
 		try {
-			await AsyncStorage.setItem( 'sleep_time', '' + this.state.chosenDate);
+      const s = this.state.sleepHours;
+      const c = this.state.count;
+      await AsyncStorage.setItem('s', s + '');
+      await AsyncStorage.setItem('count', c + '');
 		} catch (error) {
-			// Error saving data
+      
 		}
-	};
+  };
+
+  _getHours = async() => {
+    try {
+      const s = await AsyncStorage.getItem('s');
+      this.setState({sleepHours: parseInt(s)});
+		} catch (error) {
+    }
+    return sleepHours;
+  }
+  _getCount = async() => {
+    try{
+      const _count = await AsyncStorage.getItem('count');
+      this.setState({count: parseInt(_count)});
+    } catch(error) {
+    }
+    return count;
+  }
 
   static navigationOptions = {
     header: null,
@@ -472,3 +456,109 @@ const styles = StyleSheet.create({
     color: '#2e78b7',
   },
 });
+
+
+/*
+        <Overlay
+            isVisible={this.state.isVisibleSetUp}
+            windowBackgroundColor="rgba(0, 0, 0, .5)"
+            overlayBackgroundColor= "white"
+            width = "auto"
+            height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}> Pick your sleep calculation mode</Text>
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress= {() => { 
+                this.setState({
+                  sleepMode: "cycles",
+                  isVisibleSetUp: false,
+                  isVisibleCycle: true,
+                });
+              }}>
+                <Text style = {styles.button}> Sleep Cycle</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => { 
+                this.setState({
+                  sleepMode: "hours",
+                  isVisible: true,
+                  isVisibleSetUp: false,
+                });
+              }}>
+                <Text style = {styles.button}> Hours</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
+        <Overlay
+          isVisible={this.state.isVisibleCycle}
+          windowBackgroundColor="rgba(0, 0, 0, .5)"
+          overlayBackgroundColor= "white"
+          width = "auto"
+          height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}>Pick your number of sleep Cycles</Text>
+            <View style = {styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => {
+                this.onPressSleep(7.5);
+                this.onPressSleep(7.5);
+                this.setState({isVisibleCycle: false,})
+              }}>
+                <Text style = {styles.button}> 5 Cycles</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => {
+                this.onPressSleep(9);
+                this.onPressSleep(9);
+                this.setState({isVisibleCycle: false,})
+              }}>
+                <Text style = {styles.button}> 6 Cycles</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
+        <Overlay
+          isVisible={this.state.isVisible}
+          windowBackgroundColor="rgba(0, 0, 0, .5)"
+          overlayBackgroundColor= "white"
+          width = "auto"
+          height = "auto"
+        >
+          <View style={styles.welcomeContainer}>
+            <Text style = {styles.getStartedText2}>Pick a time to sleep</Text>
+            <View style = {styles.welcomeContainer}>
+              <TouchableOpacity onPress={() => {
+                this.onPressSleep(7);
+                this.onPressSleep(7);
+              }}>
+                <Text style = {styles.button}> 7 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => {
+                this.onPressSleep(8);
+                this.onPressSleep(8);
+              }}>
+                <Text style = {styles.button}> 8 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+            <View style = {styles.welcomeContainer}>
+            <TouchableOpacity onPress={() => {
+                this.onPressSleep(9);
+                this.onPressSleep(9);
+              }}>
+                <Text style = {styles.button}> 9 Hours</Text>
+              </TouchableOpacity>
+            </View> 
+          </View>
+        </Overlay>
+
+
+
+*/
