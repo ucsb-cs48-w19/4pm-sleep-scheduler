@@ -14,7 +14,7 @@ describe('Testing sleep calculator', function() {
 		const sleepFunction = require("../sleepCalc.js");
 		var time = 9;
 		var hours = 8;
-		var result = sleepFunction.sleepTime(9,1);
+		var result = sleepFunction.sleepTime(9,8);
 		assert.equal("1:00",result);
 	});
 });
