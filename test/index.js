@@ -1,4 +1,6 @@
 var assert = require('assert');
+var sleep = require('./calcSleep.js');
+
 describe('HelloWorld Module', function() {
   it('should return -1 when "Hello" is missing', function() {
     assert.equal(-1, "Hallo World".indexOf("Hello"));
@@ -8,11 +10,10 @@ describe('HelloWorld Module', function() {
   });
 });
 
-describe('HomeScreen test', function() {
-	it('should test time', function(){
-		const sortingFunctions = require("../app/screens/HomeScreen.js");
-		var sleep = '11:00 PM';
-		
-		assert.equal({isPicking: true, hasPicked: true},checkBedTime(sleep).setState());
+describe('Sleep time test', function() {
+	// And then we describe our testcases.
+	it('should return 9:00 - 8 hours = 1:00', function(done) {
+		assert.equal(sleep.sleepTime(9,8), "1:00");
+		// Invoke done when the test is complete.
+		done();
 	});
-});
