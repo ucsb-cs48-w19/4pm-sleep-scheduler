@@ -296,7 +296,7 @@ export default class HomeScreen extends React.Component {
   _getHours = async() => {
     try {
       const s = await AsyncStorage.getItem('s');
-      this.setState({sleepHours: parseInt(s)});
+      this.setState({sleepHours: parseFloat(s)});
 		} catch (error) {
     }
     return sleepHours;
@@ -304,7 +304,7 @@ export default class HomeScreen extends React.Component {
   _getCount = async() => {
     try{
       const _count = await AsyncStorage.getItem('count');
-      this.setState({count: parseInt(_count)});
+      this.setState({count: parseIntat(_count)});
     } catch(error) {
     }
     return count;
