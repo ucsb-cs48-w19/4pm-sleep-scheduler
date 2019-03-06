@@ -7,5 +7,7 @@ import React from 'react';
  it('time test',()=>{
      let TimeData= renderer.create(<HomeScreen />).getInstance();
      expect(TimeData.state().hasPicked).toEqual(true);
+     TimeData.simulate('click');
+     expect(TimeData.state().hasPicked).toEqual(false);
 
  })
