@@ -12,7 +12,7 @@ describe('HelloWorld Module', function() {
   });
 });
 
-describe('Testing setting hours', function() {
+describe("<HomeScreen/>", () => {
 	it('Should set the sleeping hours to 8', ()=> {
     var wake = '01 Jan 2018 07:00:00 GMT';
     const time = shallow(<HomeScreen ti= wake/>);
