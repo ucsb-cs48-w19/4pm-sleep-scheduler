@@ -6,7 +6,6 @@ import React from 'react';
 
  it('time test',()=>{
      let TimeData= renderer.create(<HomeScreen />).getInstance();
-
-console.log(TimeData);
+     expect(TimeData.state().hasPicked).toEqual(true);
 
  })
