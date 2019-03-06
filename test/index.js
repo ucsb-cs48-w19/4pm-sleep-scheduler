@@ -9,10 +9,7 @@ describe('HelloWorld Module', function() {
 });
 
 describe('HomeScreen test', function() {
-	it('should test time', function(){
-		const sortingFunctions = require("../app/screens/HomeScreen.js");
-		var sleep = '11:00 PM';
-		
-		assert.equal({isPicking: true, hasPicked: true},checkBedTime(sleep).setState());
+	it('should test default picking values', function() {
+		assert.equal(true, hasPicked);
 	});
 });
