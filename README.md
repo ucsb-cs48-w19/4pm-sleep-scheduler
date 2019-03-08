@@ -46,13 +46,6 @@ Enter in a time that you want to wake up the next day, and our app will return t
 
 Pressing the button will set an alarm, as well as a pop-up that informs you to which time the alarm is set.  Once that time is reached, a pop-up alert will show up in the app to inform you that it is time to go to sleep.
 
-
-## Known Problems
-
-- Currently has debugging text on the left side (True or false flags)
-- Alarm changes as you scroll through the time picker wheel.
-
-
 ## Contributing
 
 1. Fork it!
