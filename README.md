@@ -14,7 +14,7 @@ Sleep Scheduler is an iOS app created using React Native that calculates the opt
 
 ### Prerequisites
 
-NodeJS
+NodeJS (6.7.0)
 
 Install NodeJS  https://nodejs.org/en/download/
 
